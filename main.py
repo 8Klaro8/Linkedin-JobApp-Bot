@@ -1,17 +1,20 @@
-# general imports-------------------------------------------------------------------
+#imports-------------------------------------------------------------------
 import time
 import random
 
 # library imports-------------------------------------------------------------------
-
+#not used
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
+
+#was just a try
 from collections import OrderedDict
 
 # start to apply func-------------------------------------------------------------------
 def apply_job(input_list):
+    #opens collected job links individually
     for job in input_list:
         driver.get(job)
         driver.implicitly_wait(random_number)
@@ -23,19 +26,26 @@ def apply_job(input_list):
             time.sleep(random_number)
             if driver.find_element_by_css_selector('.jobs-apply-button span').text == 'Easy Apply':
                 title_of_job = driver.find_element_by_class_name('p5').text.split('\n')[0].lower()
+
+                # set preference: python should be included
+                # TODO: set it as an argument to make it easier to choose preference
                 if 'python' in title_of_job:
                     print('python is in!')
                     apply_button.click()
                     driver.implicitly_wait(random_number)
                     time.sleep(random_number)
                     texT_input = driver.find_element_by_css_selector('.fb-single-line-text__input')
+                    #test to work - not used for actiual applying process yet
+                    # TODO finish applying process
                     texT_input.send_keys('5455464367')
             else:
 
                 driver.implicitly_wait(random_number)
                 time.sleep(random_number)
                 title_of_job = driver.find_element_by_class_name('p5').text.split('\n')[0].lower()
+                # check if this is what needed
                 print(title_of_job)
+                # if criteria is included then apply
                 if 'python' in title_of_job:
                     print('python is in!')
                     apply_button.click()
@@ -61,17 +71,20 @@ def unsave_jobs():
 
     jobs_ul = driver.find_elements_by_class_name('reusable-search__result-container')
     print(len(jobs_ul))
-
+    # getting all the links saves
     jobs_link = driver.find_elements_by_css_selector('.reusable-search__entity-result-list .reusable-search__result-'
                                                      'container .entity-result__title-text a')
     list_of_job_links = []
+    #put links in a list
     for each in jobs_link:
         list_of_job_links.append(each.get_attribute('href'))
 
+    # opens link
     for link in list_of_job_links:
         driver.get(link)
         driver.implicitly_wait(random_number)
         time.sleep(random_number)
+
 
         try:
             jobs_save_button_innerHTML = driver.find_element_by_css_selector('.jobs-save-button')\
@@ -102,18 +115,20 @@ def save_jobs(list_of_job_links):
     # for job_link in job_links:
     #     list_of_job_links.append(job_link.get_attribute('href'))
 
-
+    # searches for the collected links and opens the jobs - was necessary because of scrolling problems
     for job in list_of_job_links:
         driver.get(job)
         driver.implicitly_wait(random_number)
         time.sleep(random_number)
         try:
+            #get save button
             jobs_save_button_innerHTML = driver.find_element_by_css_selector('.jobs-save-button').get_attribute('innerHTML')
             jobs_save_button = driver.find_element_by_css_selector('.jobs-save-button')
 
             driver.implicitly_wait(random_number)
             time.sleep(random_number)
 
+            #gets the save element - button
             lines = jobs_save_button_innerHTML.split('\n')
             saved_label = lines[2].strip()
             print(saved_label)
@@ -159,13 +174,13 @@ time.sleep(2)
 
 # sign in-------------------------------------------------------------------
 def sign_in():
+    # tries to log in as much as necessary - Linkedin brings unusual page therfore need to skip it!
     try:
         sign_in_button = driver.find_element_by_xpath('/html/body/div[5]/a[1]')
         sign_in_button.click()
         driver.implicitly_wait(random_number)
         time.sleep(random_number)
     except:
-        # driver.quit()
         driver.implicitly_wait(random_number)
         time.sleep(random_number)
         driver.get(LINKEDIN_LINK)
@@ -206,12 +221,14 @@ elemnts_counter  = ''
 # Scroll function-------------------------------------------------------------------
 def scroll():
     global elemnts_counter
+
+    # False trial------------------
     # job_links = driver.find_elements_by_css_selector('.jobs-search-results__list-item a')
     # last_web_element = ''
     # for each in job_links:
     #     last_web_element = each
 
-
+    # makes sure if all links are collected from the page only then moves on
     links_per_page = len(element_links) / per_page
     print(links_per_page)
     while links_per_page < 24 :
@@ -237,18 +254,21 @@ last_webelement = ''
 previous_link = ''
 
 
-# Get wanted links-------------------------------------------------------------------
+# collects necessary job links-------------------------------------------------------------------
 def collect_links():
     global last_webelement, elemnts_counter, is_new_element
     global previous_link
     job_links = driver.find_elements_by_css_selector('.jobs-search-results__list-item a')
 
     for job_link in job_links:
+        # gets the current job's link
         my_link = job_link.get_attribute('href')
+        # if link is already "collected then ingonrs"
         if previous_link == my_link:
             continue
         elif 'https://www.linkedin.com/company' in my_link:
             continue
+        # adds link which has not been added yet
         elif my_link not in element_links:
                 element_links.append(my_link)
 
@@ -267,22 +287,24 @@ current = 0
 def click_next_page():
     global current, is_new_element, per_page, new_page
 
-
+    # collecting items to loop thru to
     list_of_page_numbers = driver.find_elements_by_class_name('artdeco-pagination__indicator')
     ul_numbers_move_to = driver.find_element_by_class_name('premium-upsell-link')
-
+    # get the next elemnt( job ) and move to it - "scroll"
     action.move_to_element(ul_numbers_move_to)
     driver.implicitly_wait(random_number)
     time.sleep(random_number)
 
+    # collecting page numbers to loop thru
     page_numbers = []
     for each in list_of_page_numbers:
         page_numbers.append(each)
 
-
+    # go to next page
     page_numbers[current + 1].click()
     per_page += 1
     current += 1
+    # help determine which page is the next( current )
     print(f'currnet page number: {current + 1}')
 
     collect_links()
@@ -291,13 +313,14 @@ def click_next_page():
 element_links = []
 
 
-# Control if links are proper-------------------------------------------------------------------
+# Control if links are OK -------------------------------------------------------------------
 def print_job_links():
     driver.implicitly_wait(random_number)
     time.sleep(random_number)
 
     collect_links()
     # scroll()
+    # print to help detrermine if the numbers are good---------------------------------
     print(element_links)
     print(len(element_links))
 
@@ -326,19 +349,6 @@ except:
 # driver.implicitly_wait(random_number)
 # time.sleep(random_number)
 # left_rail.send_keys(Keys.PAGE_DOWN)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
