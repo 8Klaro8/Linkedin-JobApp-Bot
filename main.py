@@ -12,6 +12,9 @@ from selenium.webdriver import ActionChains
 #was just a try
 from collections import OrderedDict
 
+MYEMAIL = 'MYEMAIL'
+MYPASSWORD = 'MYPASSWORD'
+
 # start to apply func-------------------------------------------------------------------
 def apply_job(input_list):
     #opens collected job links individually
@@ -189,12 +192,12 @@ def sign_in():
 sign_in()
 
 email = driver.find_element_by_xpath('/html/body/div/main/div[3]/div[1]/form/div[1]/input')
-email.send_keys('hubokjaros@gmail.com')
+email.send_keys('MYEMAIL')
 driver.implicitly_wait(random_number)
 time.sleep(random_number)
 
 passw = driver.find_element_by_xpath('/html/body/div/main/div[3]/div[1]/form/div[2]/input')
-passw.send_keys('ya>xs#cd&')
+passw.send_keys('MYPASSWORD')
 driver.implicitly_wait(random_number)
 time.sleep(random_number)
 
